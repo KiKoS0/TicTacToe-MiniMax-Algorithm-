@@ -15,7 +15,7 @@ int CheckFirst() {
 	return -1;
 
 }
-int Player::PlayerCount;
+int Player::PlayerCount=0;
 
 void main() {
 
@@ -35,7 +35,6 @@ void main() {
 		cout << "Play Again(Y,N)? ";
 		char ans;
 		do {
-			cin.clear();
 			cin >> ans;
 			if (ans == 'y' || ans == 'Y')
 			{

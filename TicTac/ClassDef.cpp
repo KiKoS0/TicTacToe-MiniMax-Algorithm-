@@ -67,6 +67,7 @@ const bool GameController::CheckIfOver() {
 	return true;
 }
 
+
 const int GameController::CheckIfWon(Player whoPlaying) {
 	colorN::ChangeColor(whoPlaying.color);
 	PlayerMark who = whoPlaying.sym;
@@ -96,11 +97,15 @@ const int GameController::CheckIfWon(Player whoPlaying) {
 		colorN::initColor();
 		return 0;
 	}
+
+
 void GameIsOver() {
 	colorN::ChangeColor(Purple);
 	std::cout << "        TIE " << std::endl;
 	colorN::initColor();
 	}
+
+
 void GameController::PlayGame() {
 	using namespace std;
 	if (PlayerFirst)
@@ -111,11 +116,16 @@ void GameController::PlayGame() {
 	}
 	do {
 		if (IAEnabled) {
-			//IA PLAY
+			//IA Turn
 		}
-		else{ PlayerPlay(player2); }
+		else
+		{
+			// Player 2 Turn
+			PlayerPlay(player2); 
+		}
 		Render();
 		if (CheckIfOver()) {
+			// GameOver
 			GameIsOver();
 			GameOver = true;
 			break;
@@ -146,14 +156,16 @@ const bool GameController::CanPlay(int choice) {
 		return true;
 	return false;
 }
+
+
 void GameController::PlayerPlay(Player whoPlaying) {
 	int choice;
 	PlayerMark who = whoPlaying.sym;
 	do {
+		colorN::initColor();
 		Render();
 		colorN::ChangeColor(whoPlaying.color);
 		std::cout << "\n\n\n\nPlayer "<<(char)who << " Turn :Case Number ? :";
-		std::cin.clear();
 		std::cin >> choice;
 	} while (choice > 9 || choice < 1 || !CanPlay(choice));
 	GameController::Board[choice - 1] = (char)who;
@@ -169,6 +181,7 @@ Player::Player() {
 bool Player::operator==(Player player1)const {
 	if (this->sym == player1.sym && this->color == player1.color)
 		return 1;
+	
 	return 0;
 }
 //		 ==========================================Color NAMESPACE Definition=======================================
@@ -179,3 +192,4 @@ void colorN::ChangeColor(Color color) {
 void colorN::initColor() {
 	SetConsoleTextAttribute(hConsole, White);
 }
+

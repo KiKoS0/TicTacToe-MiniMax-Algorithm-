@@ -39,7 +39,6 @@ public:
 	bool PlayerFirst;
 	void PlayGame();
 	GameController(IAController IA)  {
-		Player::PlayerCount = 0;
 		if (IA == OFF)
 			IAEnabled = false;
 		else
@@ -76,7 +75,6 @@ class IA {
 
 namespace colorN {
 	void ChangeColor(Color color);
-	
 	void initColor();
 }
 
