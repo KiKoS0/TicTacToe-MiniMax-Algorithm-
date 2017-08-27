@@ -1,35 +1,29 @@
 #include "ClassInit.h"
-
-int CheckFirst() {
-	using namespace std;
-	cout << "Play First(Y,N)? ";
-	char ans;
-	std::cin.clear();
-	cin >> ans;
-	if (ans == 'y' || ans == 'Y')
-	{
-		return 1;
-	}
-	else if (ans == 'N' || ans == 'n')
-		return 0;
-	return -1;
-
+#include "IA.h"
+int GameController::PlayerCount=0;
+bool vsAI() {
+	 using namespace std;
+	 char ans;
+	 do
+	 {
+		 cout << "Play VS AI(Y,N)? ";
+		 cin >> ans;
+		 if (ans == 'y' || ans == 'Y')
+		 {
+			 return true;
+		 }
+		 else if (ans == 'N' || ans == 'n')
+			 return false;
+	 } while (ans != 'N' && ans != 'n' && ans != 'y' && ans != 'Y');
 }
-int Player::PlayerCount=0;
-
 void main() {
-
 	using namespace std;
 	GameController* game;
 	int PlayerFirst;
 	int Again;
-	/*do {
-		PlayerFirst = CheckFirst();
-		system("cls");
-	} while (PlayerFirst==-1);
-	game.PlayerFirst = PlayerFirst;*/
 	do {
-		game = new GameController(OFF);
+		bool isVsAI = vsAI();
+		game = new GameController((IAController)isVsAI);
 		game->PlayGame();
 		delete(game);
 		cout << "Play Again(Y,N)? ";

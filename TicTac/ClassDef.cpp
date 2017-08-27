@@ -3,8 +3,38 @@
 HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
 
 //		 ========================================== GameController Class Definition =======================================
+
+void GameController::CheckFirst() {
+	using namespace std;
+	char ans;
+	do 
+	{
+	
+	cout << "Play First(Y,N)? ";
+	cin >> ans;
+	if (ans == 'y' || ans == 'Y')
+	{
+		PlayerFirst = true;
+	}
+	else if (ans == 'N' || ans == 'n')
+		PlayerFirst = false;
+	} while (ans!='N'&& ans != 'n' && ans != 'y' && ans != 'Y');
+}
+GameController::GameController(IAController IAENABLED) : player1(OFF), GameOver(false), AIEnabled(IAENABLED) {
+	if (AIEnabled)
+		player2 = new IA(this);
+	else
+		player2 = new Player(OFF);
+
+	for (int i = 0; i < 9; i++)
+	{
+		Board.push_back(0);
+	}
+	CheckFirst();
+}
 void GameController::Render(){
 	using namespace std;
+	//colorN::ChangeColor(White);
 	system("cls");
 	int CaseIn = 0;
 	for (int i = 0; i < 3; i++)
@@ -16,7 +46,7 @@ void GameController::Render(){
 			{
 				if (Board[CaseIn] == player1.sym)
 					colorN::ChangeColor(player1.color);
-				else colorN::ChangeColor(player2.color);
+				else colorN::ChangeColor(player2->color);
 				printf("%c", Board[CaseIn]);
 				colorN::initColor();
 				printf("||");
@@ -33,8 +63,8 @@ void GameController::Render(){
 					CaseIn++;
 					colorN::initColor();
 				}
-				else if (Board[CaseIn] == player2.sym) {
-					colorN::ChangeColor(player2.color);
+				else if (Board[CaseIn] == player2->sym) {
+					colorN::ChangeColor(player2->color);
 					printf("%c", Board[CaseIn]);
 					CaseIn++;
 					colorN::initColor();
@@ -108,20 +138,28 @@ void GameIsOver() {
 
 void GameController::PlayGame() {
 	using namespace std;
+	IA* Derived = NULL;
+	if(AIEnabled)
+		 Derived= dynamic_cast<IA*> (player2);
 	if (PlayerFirst)
 	{
+		PlayerTurn = 1;
 		Render();
-		PlayerPlay(player1);
+		PlayerPlay(&player1);
 		Render();
 	}
 	do {
-		if (IAEnabled) {
+		PlayerTurn = 2;
+		if (AIEnabled) {
 			//IA Turn
+			Derived->Think();
+			PlayerPlay(player2);
 		}
 		else
 		{
 			// Player 2 Turn
 			PlayerPlay(player2); 
+			
 		}
 		Render();
 		if (CheckIfOver()) {
@@ -130,12 +168,13 @@ void GameController::PlayGame() {
 			GameOver = true;
 			break;
 		}
-		if (CheckIfWon(player2))
+		if (CheckIfWon(*player2))
 		{
 			GameOver = true;
 			break;
 		}
-		PlayerPlay(player1);
+		PlayerTurn = 1;
+		PlayerPlay(&player1);
 		Render();
 		if (CheckIfWon(player1))
 		{
@@ -158,25 +197,41 @@ const bool GameController::CanPlay(int choice) {
 }
 
 
-void GameController::PlayerPlay(Player whoPlaying) {
-	int choice;
-	PlayerMark who = whoPlaying.sym;
+void GameController::PlayerPlay(Player* whoPlaying) {
+	int choice=-1;
+	PlayerMark who = whoPlaying->sym;
 	do {
 		colorN::initColor();
 		Render();
-		colorN::ChangeColor(whoPlaying.color);
-		std::cout << "\n\n\n\nPlayer "<<(char)who << " Turn :Case Number ? :";
-		std::cin >> choice;
+		colorN::ChangeColor(whoPlaying->color);
+		if (whoPlaying->AI) {
+			auto derived = dynamic_cast<IA*> (whoPlaying);
+			choice = derived->choice;
+			GameController::Board[choice] = who;
+			return;
+		}
+		else
+		{
+			std::cout << "\n\n\n\nPlayer " << (char)who << " Turn :Case Number ? :";
+			std::cin >> choice;
+		}
+
 	} while (choice > 9 || choice < 1 || !CanPlay(choice));
 	GameController::Board[choice - 1] = (char)who;
 }
+
+const vector <char> GameController::getBoard()
+{
+	return Board;
+}
+
 //		 ==========================================PLAYER CLASS Definition===========================================
-Player::Player() {
+Player::Player(IAController AIEnable):AI(AIEnable)  {
 	PlayerMark Symbols[] = { X,O };
 	Color Colors[] = {Green,Red};
-	sym = Symbols[PlayerCount];
-	color = Colors[PlayerCount];
-	Player::PlayerCount++;
+	sym = Symbols[GameController::PlayerCount];
+	color = Colors[GameController::PlayerCount];
+	GameController::PlayerCount++;
 }
 bool Player::operator==(Player player1)const {
 	if (this->sym == player1.sym && this->color == player1.color)
