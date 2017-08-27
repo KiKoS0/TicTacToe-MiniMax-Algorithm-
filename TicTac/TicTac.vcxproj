@@ -146,11 +146,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="IA.cpp" />
     <ClCompile Include="MainSourceFile.cpp" />
     <ClCompile Include="ClassDef.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ClassInit.h" />
+    <ClInclude Include="IA.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
